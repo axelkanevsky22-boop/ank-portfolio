@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANK Asesoría Financiera — Mi Portfolio</title>
+<meta name="description" content="Portal de seguimiento de cartera — ANK Asesoría Financiera">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><rect width='36' height='36' rx='8' fill='%231f6feb'/><text x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui' font-weight='800' font-size='13' fill='white'>ANK</text></svg>">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ════════════════════════════════════════════════════════════
+   CSS — ANK PORTFOLIO DASHBOARD v2
+   ════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0b0f14; --surface:#131920; --surface2:#1a2230; --surface3:#202d3d;
+  --border:#263040; --accent:#4d9eff; --accent-soft:rgba(77,158,255,.12);
+  --green:#34d058; --green-soft:rgba(52,208,88,.12);
+  --red:#ea4a5a; --red-soft:rgba(234,74,90,.12);
+  --warn:#e3b341; --warn-soft:rgba(227,179,65,.12);
+  --muted:#6b7d93; --text:#b3c3d3; --text-hi:#e6edf3;
+  --white:#f0f6fc;
+  --radius:12px; --radius-sm:8px;
+  --font:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',sans-serif;
+  --transition:all .2s ease;
+}
+html { scroll-behavior: smooth; }
+body { background:var(--bg); color:var(--text); font-family:var(--font); font-size:14px; line-height:1.55; }
+a { color:var(--accent); text-decoration:none; }
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3hx; }
+input, select, button { font-family:var(--font); }
+
+/* ── HEADER ──────────────────────────────────────── */
+.header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 28px; background:var(--surface);
+  border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:100;
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+}
+.logo { display:flex; align-items:center; gap:10px; }
+.logo-mark {
+  width:34px; height:34px; border-radius:8px;
+  background:linear-gradient(135deg,#1a6dd4,#4d9eff);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:12px; color:#fff; letter-spacing:-.5px;
+}
+.logo h1 { font-size:15px; font-weight:700; color:var(--white); }
+.logo p  { font-size:10px; color:var(--muted); margin-top:1px; letter-spacing:.3px; }
+.header-right { display:flex; align-items:center; gap:14px; }
+.client-sel {
+  background:var(--surface2); border:1px solid var(--border);
+  color:var(--text-hi); padding:7px 14px; border-radius:20px;
+  font-size:13px; font-weight:500; cursor:pointer; appearance:none;
+  -webkit-appearance:none; outline:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7d93'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 12px center;
+  padding-right:30px;
+}
+.update-badge { font-size:10px; color:var(--muted); }
+
+/* ── MAIN LAYOUT ─────────────────────────────────── */
+.main { max-width:1300px; margin:0 auto; padding:24px 28px 60px; }
+
+/* ── KPI STRIP ───────────────────────────────────── */
+.kpi-strip {
+  display:grid; grid-template-columns:repeat(5,1fr);
+  gap:14px; margin-bottom:26px;
+}
+@media(max-width:1000px){ .kpi-strip{grid-template-columns:repeat(3,1fr);} }
+@media(max-width:600px) { .kpi-strip{grid-template-columns:1fr 1fr;} }
+.kpi {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:18px 16px;
+  position:relative; overflow:hidden;
+}
+.kpi::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+.kpi.blue::after   { background:var(--accent); }
+.kpi.green::after  { background:var(--green); }
+.kpi.yellow::after { background:var(--warn); }
+.kpi .k-label { font-size:10px; text-transform:uppercase; letter-spacing:.7px; color:var(--muted); margin-bottom:6px; }
+.kpi .k-val   { font-size:24px; font-weight:700; color:var(--white); line-height:1.1; }
+.kpi .k-sub   { font-size:11px; color:var(--muted); margin-top:5px; }
+.kpi .k-delta { font-size:12px; font-weight:600; margin-top:3px; }
+.kpi .k-delta.pos { color:var(--green); }
+.kpi .k-delta.neg { color:var(--red); }
+
+/* ── NAV TABS ────────────────────────────────────── */
+.nav-tabs {
+  display:flex; gap:2px; border-bottom:1px solid var(--border);
+  margin-bottom:22px; overflow-x:auto;
+}
+.nav-tab {
+  padding:10px 18px; border:none; background:transparent;
+  color:var(--muted); cursor:pointer; font-size:13px; font-weight:500;
+  border-bottom:2px solid transparent; margin-bottom:-1px;
+  transition:var(--transition); white-space:nowrap;
+}
+.nav-tab:hover  { color:var(--text); }
+.nav-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.pane { display:none; animation:fadeIn .25s ease; }
+.pane.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+
+/* ── CARDS & PANELS ──────────────────────────────── */
+.card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:20px; margin-bottom:18px;
+}
+.card-title {
+  font-size:14px; font-weight:600; color:var(--text-hi);
+  margin-bottom:14px; display:flex; align-items:center; gap:8px;
+}
+.card-title .badge {
+  font-size:10px; font-weight:500; color:var(--muted);
+  background:var(--surface2); border:1px solid var(--border);
+  padding:2px 8px; border-radius:10px;
+}
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media(max-width:768px) { .two-col{grid-template-columns:1fr;} }
+
+/* ── PILLS / TOGGLES ────────────────────────────── */
+.filter-bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:14px; }
+.filter-bar .label { font-size:11px; color:var(--muted); margin-right:2px; }
+.pill {
+  padding:4px 12px; border-radius:16px; font-size:11px; font-weight:500;
+  border:1px solid var(--border); background:var(--surface2);
+  color:var(--muted); cursor:pointer; transition:var(--transition);
+}
+.pill:hover  { border-color:var(--accent); color:var(--text); }
+.pill.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+.toggle-group {
+  display:inline-flex; background:var(--surface2);
+  border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden;
+}
+.tog {
+  padding:5px 13px; font-size:11px; font-weight:500; cursor:pointer;
+  border:none; background:transparent; color:var(--muted); font-family:var(--font);
+  transition:var(--transition);
+}
+.tog:hover  { color:var(--text); }
+.tog.active { background:var(--accent); color:#fff; }
+
+/* ── TABLE ───────────────────────────────────────── */
+.tbl-wrap {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); overflow:hidden;
+}
+table { width:100%; border-collapse:collapse; }
+thead th {
+  padding:9px 12px; text-align:left;
+  font-size:10px; text-transform:uppercase; letter-spacing:.5px;
+  color:var(--muted); background:var(--surface2);
+  border-bottom:1px solid var(--border);
+  white-space:nowrap; cursor:pointer; user-select:none;
+}
+thead th:hover { color:var(--text); }
+tbody tr { border-bottom:1px solid var(--border); transition:background .1s; }
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background:var(--surface2); }
+tbody td { padding:10px 12px; font-size:13px; }
+.num { text-align:right; font-variant-numeric:tabular-nums; }
+.pos { color:var(--green); font-weight:600; }
+.neg { color:var(--red);   font-weight:600; }
+.neu { color:var(--muted); }
+.tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:600; }
+.tag-rv  { background:var(--accent-soft); color:var(--accent); }
+.tag-rf  { background:var(--green-soft);  color:var(--green); }
+.tag-open   { background:var(--accent-soft); color:var(--accent); }
+.tag-closed { background:rgba(107,125,147,.15); color:var(--muted); }
+.ticker-cell { display:flex; align-items:center; gap:8px; }
+.ticker-dot {
+  width:28px; height:28px; border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; font-weight:800; color:#fff; flex-shrink:0;
+}
+.ticker-name { font-weight:600; color:var(--text-hi); font-size:12px; }
+.ticker-sub  { font-size:10px; color:var(--muted); }
+.bar-sm { width:100%; height:5px; border-radius:3px; background:var(--surface2); margin-top:3px; }
+.bar-sm-fill { height:100%; border-radius:3px; }
+
+/* ── DONUT ───────────────────────────────────────── */
+.donut-flex { display:flex; align-items:center; gap:16px; }
+.donut-flex canvas { width:130px!important; height:130px!important; flex-shrink:0; }
+.legend { list-style:none; flex:1; display:flex; flex-direction:column; gap:6px; }
+.legend li { display:flex; align-items:center; justify-content:space-between; font-size:11px; }
+.legend .dot { width:8px; height:8px; border-radius:50%; margin-right:6px; flex-shrink:0; }
+.legend .pct { font-weight:600; color:var(--text-hi); }
+
+/* ── STAT ROW ────────────────────────────────────── */
+.stats { display:flex; gap:28px; flex-wrap:wrap; margin-bottom:18px; }
+.stats .s { display:flex; flex-direction:column; gap:2px; }
+.stats .s .l { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+.stats .s .v { font-size:18px; font-weight:700; color:var(--white); }
+.stats .s .u { font-size:11px; color:var(--muted); }
+
+/* ── SEARCH BOX (Consultas) ──────────────────────── */
+.search-box {
+  display:flex; gap:10px; margin-bottom:18px;
+}
+.search-input {
+  flex:1; padding:12px 16px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--radius-sm); color:var(--text-hi);
+  font-size:14px; outline:none; transition:var(--transition);
+}
+.search-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(77,158,255,.15); }
+.search-input::placeholder { color:var(--muted); }
+.search-btn {
+  padding:12px 24px; border:none; border-radius:var(--radius-sm);
+  background:var(--accent); color:#fff; font-weight:600;
+  font-size:14px; cursor:pointer; transition:var(--transition);
+}
+.search-btn:hover { background:#3a8bee; }
+
+/* ── CHAT MESSAGES ───────────────────────────────── */
+.chat-area { min-height:200px; }
+.chat-msg {
+  padding:14px 18px; margin-bottom:12px;
+  border-radius:var(--radius); font-size:13px; line-height:1.65;
+  animation:fadeIn .3s ease;
+}
+.chat-msg.user {
+  background:var(--accent-soft); border:1px solid rgba(77,158,255,.2);
+  color:var(--text-hi); margin-left:40px;
+}
+.chat-msg.assistant {
+  background:var(--surface); border:1px solid var(--border);
+  color:var(--text); margin-right:40px;
+}
+.chat-msg .msg-header {
+  font-size:10px; font-weight:600; text-transform:uppercase;
+  letter-spacing:.5px; margin-bottom:6px;
+}
+.chat-msg.user .msg-header { color:var(--accent); }
+.chat-msg.assistant .msg-header { color:var(--green); }
+.typing-indicator {
+  display:inline-flex; gap:4px; padding:8px 0;
+}
+.typing-indicator span {
+  width:6px; height:6px; border-radius:50%; background:var(--muted);
+  animation:blink 1.4s infinite both;
+}
+.typing-indicator span:nth-child(2) { animation-delay:.2s; }
+.typing-indicator span:nth-child(3) { animation-delay:.4s; }
+@keyframes blink { 0%,80%,100%{opacity:.3} 40%{opacity:1} }
+
+/* ── QUICK ACTIONS GRID ──────────────────────────── */
+.quick-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:10px; margin-bottom:22px;
+}
+.quick-card {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:14px 16px;
+  cursor:pointer; transition:var(--transition);
+}
+.quick-card:hover { border-color:var(--accent); background:var(--surface3); transform:translateY(-1px); }
+.quick-card .qc-icon { font-size:20px; margin-bottom:6px; }
+.quick-card .qc-title { font-size:12px; font-weight:600; color:var(--text-hi); margin-bottom:3px; }
+.quick-card .qc-desc  { font-size:11px; color:var(--muted); line-height:1.4; }
+
+/* ── GLOSSARY ────────────────────────────────────── */
+.glossary-item {
+  padding:12px 16px; border-bottom:1px solid var(--border);
+  cursor:pointer; transition:var(--transition);
+}
+.glossary-item:hover { background:var(--surface2); }
+.glossary-item:last-child { border-bottom:none; }
+.glossary-term { font-weight:600; color:var(--text-hi); font-size:13px; }
+.glossary-def  { font-size:12px; color:var(--muted); margin-top:4px; line-height:1.5; display:none; }
+.glossary-item.open .glossary-def { display:block; }
+.glossary-item .arrow { float:right; color:var(--muted); transition:transform .2s; }
+.glossary-item.open .arrow { transform:rotate(90deg); }
+
+/* ── FOOTER ──────────────────────────────────────── */
+.footer {
+  text-align:center; padding:20px;
+  font-size:11px; color:var(--muted);
+  border-top:1px solid var(--border); margin-top:40px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<header class="header">
+  <div class="logo">
+    <div class="logo-mark">ANK</div>
+    <div><h1>ANK Asesoría Financiera</h1><p>Portal de Seguimiento de Cartera</p></div>
+  </div>
+  <div class="header-right">
+    <select class="client-sel" id="clientSel" onchange="onClientChange()">
+      <option value="janowski">Nicolas Janowski</option>
+      <option value="nechaevsky">Damian Nechaevsky</option>
+    </select>
+    <span class="update-badge">Actualizado: <span id="updDate">—</span></span>
+  </div>
+</header>
+
+<!-- ═══════════════════════ MAIN ════════════════════════ -->
+<main class="main">
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip" id="kpiStrip"></div>
+
+  <!-- NAV TABS -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="goTab('tenencias',this)">Tenencias</button>
+    <button class="nav-tab" onclick="goTab('rendimiento',this)">Rendimiento</button>
+    <button class="nav-tab" onclick="goTab('evolucion',this)">Evolución</button>
+    <button class="nav-tab" onclick="goTab('consultas',this)">Consultas</button>
+    <button class="nav-tab" onclick="goTab('glosario',this)">Glosario</button>
+  </div>
+
+  <!-- ═══ TENENCIAS ════════════════════════════════════════ -->
+  <div class="pane active" id="pane-tenencias">
+    <div class="two-col" style="margin-bottom:18px">
+      <div class="card">
+        <div class="card-title">Distribución por Asset Class</div>
+        <div class="donut-flex"><canvas id="dAC"></canvas><ul class="legend" id="lAC"></ul></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Distribución por Categoría</div>
+        <div class="donut-flex"><canvas id="dCat"></canvas><ul class="legend" id="lCat"></ul></div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <span class="label">Filtrar:</span>
+      <button class="pill active" onclick="filterH('all',this)">Todos</button>
+      <button class="pill" onclick="filterH('Renta Variable',this)">Renta Variable</button>
+      <button class="pill" onclick="filterH('Renta Fija',this)">Renta Fija</button>
+    </div>
+    <div class="card-title">Tenencias actuales <span class="badge" id="hCount">—</span></div>
+    <div class="tbl-wrap">
+      <table><thead><tr>
+        <th onclick="srt('h','ticker')">Ticker ↕</th>
+        <th onclick="srt('h','categoria')">Categoría ↕</th>
+        <th onclick="srt('h','region')">Región ↕</th>
+        <th class="num" onclick="srt('h','valor')">Valuación USD ↕</th>
+        <th class="num" onclick="srt('h','pct')">% Cartera ↕</th>
+        <th class="num" onclick="srt('h','pnl')">P&L USD ↕</th>
+        <th class="num" onclick="srt('h','pnlpct')">P&L % ↕</th>
+        <th>Clase</th>
+      </tr></thead><tbody id="hBody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ═══ RENDIMIENTO ══════════════════════════════════════ -->
+  <div class="pane" id="pane-rendimiento">
+    <div class="filter-bar">
+      <span class="label">Ver:</span>
+      <div class="toggle-group" id="tgView">
+        <button class="tog active" onclick="perfV('open',this)">Abiertos</button>
+        <button class="tog" onclick="perfV('closed',this)">Cerrados</button>
+        <button class="tog" onclick="perfV('all',this)">Todos</button>
+      </div>
+      <span class="label" style="margin-left:10px">Agrupar:</span>
+      <div class="toggle-group" id="tgGrp">
+        <button class="tog active" onclick="perfG('ticker',this)">Ticker</button>
+        <button class="tog" onclick="perfG('categoria',this)">Categoría</button>
+        <button class="tog" onclick="perfG('region',this)">Región</button>
+      </div>
+    </div>
+    <div class="two-col" style="margin-bottom:18px">
+      <div class="card">
+        <div class="card-title">Contribución al P&L</div>
+        <canvas id="barPnl"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-title">P&L por Asset Class</div>
+        <div class="donut-flex"><canvas id="dPnl"></canvas><ul class="legend" id="lPnl"></ul></div>
+      </div>
+    </div>
+    <div class="card-title">Detalle de rendimiento <span class="badge" id="pCount">—</span></div>
+    <div class="tbl-wrap">
+      <table><thead><tr>
+        <th onclick="srt('p','label')">Ticker ↕</th>
+        <th onclick="srt('p','categoria')">Categoría ↕</th>
+        <th>Estado</th>
+        <th class="num" onclick="srt('p','costo')">Costo ↕</th>
+        <th class="num" onclick="srt('p','valor')">Valuación ↕</th>
+        <th class="num" onclick="srt('p','pnl')">P&L USD ↕</th>
+        <th class="num" onclick="srt('p','pnlpct')">P&L % ↕</th>
+      </tr></thead><tbody id="pBody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ═══ EVOLUCIÓN ════════════════════════════════════════ -->
+  <div class="pane" id="pane-evolucion">
+    <div class="stats" id="evoStats"></div>
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-title">Evolución del portfolio (USD) — neto de movimientos de capital</div>
+      <canvas id="evoChart"></canvas>
+    </div>
+    <div class="card-title">Movimientos de capital</div>
+    <div class="tbl-wrap">
+      <table><thead><tr>
+        <th>Fecha</th><th>Tipo</th><th class="num">Monto USD</th><th>Descripción</th>
+      </tr></thead><tbody id="cfBody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ═══ CONSULTAS ════════════════════════════════════════ -->
+  <div class="pane" id="pane-consultas">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">Consultas rápidas</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:16px">Seleccioná una pregunta frecuente o escribí tu consulta. Tu asesor Axel te responderá a la brevedad.</p>
+
+      <div class="quick-grid" id="quickGrid"></div>
+
+      <div class="search-box">
+        <input class="search-input" id="chatInput" placeholder="Escribí tu consulta sobre el portfolio…" onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="search-btn" onclick="sendChat()">Enviar</button>
+      </div>
+
+      <div class="chat-area" id="chatArea"></div>
+    </div>
+  </div>
+
+  <!-- ═══ GLOSARIO ═════════════════════════════════════════ -->
+  <div class="pane" id="pane-glosario">
+    <div class="card" style="padding:0">
+      <div class="card-title" style="padding:16px 16px 0">Glosario de inversiones <span class="badge" id="gCount">—</span></div>
+      <p style="font-size:12px;color:var(--muted);padding:4px 16px 14px">Hacé click en cualquier término para ver su explicación.</p>
+      <div id="glossaryList"></div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  ANK Asesoría Financiera &mdash; Axel Kañevsky &mdash; Portal de seguimiento de cartera<br>
+  La información presentada es a fines informativos y no constituye recomendación de inversión.
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════
+     DATA & LOGIC
+═══════════════════════════════════════════════════════════ -->
+<script>
+/* ──────────────────────────────────────────────────────
+   DATA — CLIENTS
+────────────────────────────────────────────────────── */
+const CLIENTS = {
+  janowski: {
+    name:"Nicolas Janowski", broker:"Balanz", updated:"2026-03-10", funded:46200,
+    holdings:[
+      {t:"SPY",c:"Equity ETFs USA",r:"USA",ac:"Renta Variable",v:7698,co:6100,st:"open"},
+      {t:"QQQ",c:"Equity ETFs USA",r:"USA",ac:"Renta Variable",v:6264,co:5200,st:"open"},
+      {t:"XLP",c:"Equity ETFs USA",r:"USA",ac:"Renta Variable",v:6088,co:5500,st:"open"},
+      {t:"EEM",c:"Equity ETFs Emergentes",r:"Emergentes",ac:"Renta Variable",v:1166,co:1100,st:"open"},
+      {t:"AMZN",c:"Equity USA",r:"USA",ac:"Renta Variable",v:1166,co:980,st:"open"},
+      {t:"GOOGL",c:"Equity USA",r:"USA",ac:"Renta Variable",v:1166,co:1200,st:"open"},
+      {t:"META",c:"Equity USA",r:"USA",ac:"Renta Variable",v:1469,co:1050,st:"open"},
+      {t:"NFLX",c:"Equity USA",r:"USA",ac:"Renta Variable",v:1166,co:900,st:"open"},
+      {t:"UBER",c:"Equity USA",r:"USA",ac:"Renta Variable",v:1166,co:1166,st:"open"},
+      {t:"ASML",c:"Equity Europe",r:"Europa",ac:"Renta Variable",v:1166,co:1400,st:"open"},
+      {t:"NU",c:"Equity Brazil",r:"Emergentes",ac:"Renta Variable",v:1166,co:900,st:"open"},
+      {t:"MELI",c:"Equity Latam",r:"Emergentes",ac:"Renta Variable",v:1166,co:800,st:"open"},
+      {t:"VSCRO",c:"Bonos Corporativos USD",r:"Emergentes",ac:"Renta Fija",v:4134,co:4000,st:"open"},
+      {t:"PN35O",c:"Bonos Corporativos USD",r:"Emergentes",ac:"Renta Fija",v:3837,co:3700,st:"open"},
+      {t:"IRCOO",c:"Bonos Corporativos USD",r:"Emergentes",ac:"Renta Fija",v:3155,co:3000,st:"open"},
+      {t:"PLC4O",c:"Bonos Corporativos USD",r:"Emergentes",ac:"Renta Fija",v:2184,co:2100,st:"open"},
+      {t:"TLCMO",c:"Bonos Corporativos USD",r:"Emergentes",ac:"Renta Fija",v:1109,co:1000,st:"open"},
+      {t:"TLCTO",c:"Bonos Corporativos USD",r:"Emergentes",ac:"Renta Fija",v:3123,co:3123,st:"open"},
+      {t:"BLATAM",c:"FCI USD",r:"Emergentes",ac:"Renta Fija",v:7518,co:5800,st:"open"},
+      {t:"PER14A",c:"FCI Pesos",r:"Argentina",ac:"Renta Fija",v:175,co:160,st:"open"},
+      {t:"BCMMA",c:"FCI Pesos",r:"Argentina",ac:"Renta Fija",v:2,co:2,st:"open"},
+      // closed
+      {t:"YPF",c:"Equity Latam",r:"Emergentes",ac:"Renta Variable",v:0,co:800,st:"closed",ev:1120},
+      {t:"BBVA",c:"Equity Europe",r:"Europa",ac:"Renta Variable",v:0,co:600,st:"closed",ev:690},
+      {t:"AL30D",c:"Bonos Soberanos USD",r:"Argentina",ac:"Renta Fija",v:0,co:2500,st:"closed",ev:2680},
+      {t:"AAPL",c:"Equity USA",r:"USA",ac:"Renta Variable",v:0,co:1500,st:"closed",ev:1870},
+    ],
+    cashflows:[
+      {f:"2024-01-15",tipo:"Depósito",m:12000,d:"Apertura de cuenta — fondeo inicial"},
+      {f:"2024-04-10",tipo:"Depósito",m:8000,d:"Fondeo adicional Q2 2024"},
+      {f:"2024-07-22",tipo:"Depósito",m:6200,d:"Reinversión dividendos + nuevo capital"},
+      {f:"2024-11-05",tipo:"Depósito",m:4000,d:"Fondeo Q4 2024"},
+      {f:"2025-03-14",tipo:"Depósito",m:5000,d:"Fondeo Q1 2025"},
+      {f:"2025-08-20",tipo:"Extracción",m:-5000,d:"Retiro parcial"},
+      {f:"2026-01-10",tipo:"Depósito",m:3000,d:"Fondeo enero 2026"},
+      {f:"2026-03-06",tipo:"Depósito",m:16017,d:"Fondeo USD 16,017 (ARS $23M — bono)"},
+    ],
+    evo:[
+      {d:"2024-01",v:11800},{d:"2024-02",v:12400},{d:"2024-03",v:13100},
+      {d:"2024-04",v:19800},{d:"2024-05",v:20600},{d:"2024-06",v:21900},
+      {d:"2024-07",v:27200},{d:"2024-08",v:28100},{d:"2024-09",v:29400},
+      {d:"2024-10",v:30800},{d:"2024-11",v:34300},{d:"2024-12",v:35100},
+      {d:"2025-01",v:36200},{d:"2025-02",v:37800},{d:"2025-03",v:40900},
+      {d:"2025-04",v:42100},{d:"2025-05",v:41200},{d:"2025-06",v:38100},
+      {d:"2025-07",v:37300},{d:"2025-08",v:31800},{d:"2025-09",v:33200},
+      {d:"2025-10",v:35600},{d:"2025-11",v:37900},{d:"2025-12",v:39800},
+      {d:"2026-01",v:42700},{d:"2026-02",v:43100},{d:"2026-03",v:56083},
+    ]
+  },
+  nechaevsky: {
+    name:"Damian Nechaevsky", broker:"Balanz", updated:"2026-03-10", funded:52000,
+    holdings:[
+      {t:"SPY",c:"Equity ETFs USA",r:"USA",ac:"Renta Variable",v:5200,co:4600,st:"open"},
+      {t:"QQQ",c:"Equity ETFs USA",r:"USA",ac:"Renta Variable",v:4400,co:3800,st:"open"},
+      {t:"XLP",c:"Equity ETFs USA",r:"USA",ac:"Renta Variable",v:3100,co:2900,st:"open"},
+      {t:"EWZ",c:"Equity ETFs Brazil",r:"Emergentes",ac:"Renta Variable",v:3200,co:3000,st:"open"},
+      {t:"MCHI",c:"Equity ETFs China",r:"Emergentes",ac:"Renta Variable",v:1900,co:2100,st:"open"},
+      {t:"AMZN",c:"Equity USA",r:"USA",ac:"Renta Variable",v:2600,co:2200,st:"open"},
+      {t:"META",c:"Equity USA",r:"USA",ac:"Renta Variable",v:3100,co:2400,st:"open"},
+      {t:"GOOGL",c:"Equity USA",r:"USA",ac:"Renta Variable",v:2800,co:2500,st:"open"},
+      {t:"BABA",c:"Equity China",r:"Emergentes",ac:"Renta Variable",v:1400,co:1700,st:"open"},
+      {t:"NU",c:"Equity Brazil",r:"Emergentes",ac:"Renta Variable",v:1100,co:900,st:"open"},
+      {t:"MELI",c:"Equity Latam",r:"Emergentes",ac:"Renta Variable",v:3700,co:2800,st:"open"},
+      {t:"ESTRA1A",c:"FCI USD",r:"Argentina",ac:"Renta Fija",v:4500,co:4500,st:"open"},
+      {t:"VSCRO",c:"Bonos Corporativos USD",r:"Emergentes",ac:"Renta Fija",v:4400,co:4200,st:"open"},
+      {t:"PN35O",c:"Bonos Corporativos USD",r:"Emergentes",ac:"Renta Fija",v:3900,co:3700,st:"open"},
+      {t:"IRCOO",c:"Bonos Corporativos USD",r:"Emergentes",ac:"Renta Fija",v:3200,co:3100,st:"open"},
+      {t:"PLC4O",c:"Bonos Corporativos USD",r:"Emergentes",ac:"Renta Fija",v:2300,co:2200,st:"open"},
+      {t:"BLATAM",c:"FCI USD",r:"Emergentes",ac:"Renta Fija",v:5100,co:4200,st:"open"},
+      {t:"TLCMO",c:"Bonos Corporativos USD",r:"Emergentes",ac:"Renta Fija",v:1800,co:1700,st:"open"},
+      {t:"PER14A",c:"FCI Pesos",r:"Argentina",ac:"Renta Fija",v:180,co:170,st:"open"},
+      {t:"BCMMA",c:"FCI Pesos",r:"Argentina",ac:"Renta Fija",v:3,co:3,st:"open"},
+      {t:"PAGS",c:"Equity Latam",r:"Emergentes",ac:"Renta Variable",v:4258,co:3500,st:"open"},
+    ],
+    cashflows:[
+      {f:"2023-09-10",tipo:"Depósito",m:20000,d:"Apertura de cuenta"},
+      {f:"2024-02-15",tipo:"Depósito",m:15000,d:"Fondeo Q1 2024"},
+      {f:"2024-08-01",tipo:"Depósito",m:10000,d:"Fondeo Q3 2024"},
+      {f:"2025-01-20",tipo:"Depósito",m:7000,d:"Fondeo Q1 2025"},
+      {f:"2025-06-15",tipo:"Depósito",m:3500,d:"Fondeo junio 2025 + ESTRA1A"},
+    ],
+    evo:[
+      {d:"2023-09",v:19500},{d:"2023-10",v:19100},{d:"2023-11",v:20300},
+      {d:"2023-12",v:21800},{d:"2024-01",v:22600},{d:"2024-02",v:36900},
+      {d:"2024-03",v:38200},{d:"2024-04",v:39500},{d:"2024-05",v:40800},
+      {d:"2024-06",v:42300},{d:"2024-07",v:43100},{d:"2024-08",v:51500},
+      {d:"2024-09",v:53200},{d:"2024-10",v:54800},{d:"2024-11",v:55400},
+      {d:"2024-12",v:56100},{d:"2025-01",v:61200},{d:"2025-02",v:60500},
+      {d:"2025-03",v:58900},{d:"2025-04",v:57200},{d:"2025-05",v:59100},
+      {d:"2025-06",v:61800},{d:"2025-07",v:60200},{d:"2025-08",v:58700},
+      {d:"2025-09",v:59800},{d:"2025-10",v:60400},{d:"2025-11",v:61100},
+      {d:"2025-12",v:61900},{d:"2026-01",v:62100},{d:"2026-02",v:61800},
+      {d:"2026-03",v:62238},
+    ]
+  }
+};
+
+/* ──────────────────────────────────────────────────────
+   GLOSSARY
+────────────────────────────────────────────────────── */
+const GLOSSARY = [
+  {term:"Renta Variable (RV)",def:"Activos cuyo retorno no está predeterminado: acciones, ETFs, CEDEARs. Mayor potencial de rendimiento pero también mayor riesgo."},
+  {term:"Renta Fija (RF)",def:"Instrumentos que pagan un flujo de interés periódico: bonos corporativos, soberanos, obligaciones negociables. Menor volatilidad que la renta variable."},
+  {term:"ETF (Exchange Traded Fund)",def:"Fondo cotizado en bolsa que replica un índice o una canasta de activos. Ejemplo: SPY replica el S&P 500."},
+  {term:"Bono Corporativo",def:"Deuda emitida por una empresa privada. Paga cupones periódicos y devuelve el capital al vencimiento. Ejemplo: VSCRO, PN35O."},
+  {term:"FCI (Fondo Común de Inversión)",def:"Vehículo de inversión colectiva administrado por una sociedad gerente. Puede ser en pesos o en dólares. Ejemplo: BLATAM, ESTRA1A."},
+  {term:"P&L (Profit & Loss)",def:"Ganancia o pérdida de una posición. Se calcula como la diferencia entre el valor actual y el costo de adquisición."},
+  {term:"Fondeo",def:"Capital nuevo depositado en la cuenta de inversión. Cada depósito incrementa el capital invertido total."},
+  {term:"Extracción / Retiro",def:"Salida de capital de la cuenta de inversión. Reduce el capital fondeado a los efectos del cálculo de rendimiento."},
+  {term:"Rebalanceo",def:"Proceso de ajustar las proporciones de una cartera para que se alineen con la estrategia objetivo. Puede implicar compras y ventas."},
+  {term:"CEDEAR",def:"Certificado de Depósito Argentino. Permite invertir en acciones del exterior (como AMZN, META) desde una cuenta local en Argentina."},
+  {term:"Asset Class",def:"Clase de activo: agrupación principal que distingue Renta Variable de Renta Fija dentro de la cartera."},
+  {term:"Categoría",def:"Subclasificación dentro de cada Asset Class. Ejemplo: dentro de RV → Equity ETFs USA, Equity Latam, etc."},
+  {term:"Trade Abierto",def:"Posición que aún mantenés en cartera. Su P&L es no realizado (puede cambiar con el mercado)."},
+  {term:"Trade Cerrado",def:"Posición que ya fue vendida/liquidada. El P&L queda cristalizado."},
+  {term:"Capital Fondeado",def:"Suma total de depósitos menos extracciones. Es la base contra la cual se mide el rendimiento del portfolio."},
+  {term:"Valuación",def:"Valor de mercado actual de todas las posiciones abiertas en la cartera, expresado en dólares estadounidenses."},
+  {term:"Rendimiento vs Capital Fondeado",def:"Mide cuánto ganaste o perdiste respecto al dinero que realmente pusiste. Fórmula: (Valuación - Capital Fondeado) / Capital Fondeado × 100."},
+  {term:"Región",def:"Clasificación geográfica de cada instrumento: USA, Europa, Emergentes, Argentina, etc."},
+];
+
+/* ──────────────────────────────────────────────────────
+   QUICK ACTIONS
+────────────────────────────────────────────────────── */
+const QUICK_ACTIONS = [
+  {icon:"📊",title:"¿Cuál es mi posición más grande?",desc:"Ver la tenencia con mayor peso en cartera"},
+  {icon:"📈",title:"¿Cuánto gané en total?",desc:"Rendimiento absoluto y porcentual vs capital fondeado"},
+  {icon:"💰",title:"¿Cuánto tengo en renta fija?",desc:"Desglose de bonos y fondos comunes"},
+  {icon:"⚖️",title:"¿Cómo está el balance RV/RF?",desc:"Proporción actual de renta variable vs renta fija"},
+  {icon:"🔴",title:"¿Tengo posiciones en pérdida?",desc:"Instrumentos con P&L negativo"},
+  {icon:"📅",title:"¿Cuándo fue mi último depósito?",desc:"Historial de movimientos de capital"},
+  {icon:"🌎",title:"¿Cuál es mi exposición geográfica?",desc:"Distribución por región"},
+  {icon:"🏦",title:"¿Cuánto vendí en el pasado?",desc:"Historial de trades cerrados y su resultado"},
+];
+
+/* ──────────────────────────────────────────────────────
+   PALETTE & HELPERS
+────────────────────────────────────────────────────── */
+const P=['#4d9eff','#34d058','#e3b341','#ea4a5a','#d2a8ff','#79c0ff','#56d364','#ffa657','#ff7b72','#a5f3fc','#6ee7b7','#fde68a','#f9a8d4','#a78bfa','#93c5fd'];
+function usd(n){return'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})}
+function pctf(n,d=1){return(n>=0?'+':'')+n.toFixed(d)+'%'}
+function cn(n){return n>0?'pos':n<0?'neg':'neu'}
+
+/* ──────────────────────────────────────────────────────
+   STATE
+────────────────────────────────────────────────────── */
+let CUR='janowski';
+let hFilter='all', hSort={c:'valor',d:-1};
+let pView='open', pGrp='ticker', pSort={c:'pnl',d:-1};
+let charts={};
+
+function D(){return CLIENTS[CUR]}
+function openH(){return D().holdings.filter(h=>h.st==='open'&&h.v>0)}
+
+/* ──────────────────────────────────────────────────────
+   RENDER ENGINE
+────────────────────────────────────────────────────── */
+function onClientChange(){CUR=document.getElementById('clientSel').value;renderAll();}
+
+function renderAll(){
+  renderKPIs();renderDonuts();renderHoldings();
+  renderPerf();renderEvo();renderCashflows();
+  renderGlossary();renderQuick();
+  document.getElementById('updDate').textContent=D().updated;
+}
+
+// KPIs
+function renderKPIs(){
+  const h=openH(),tot=h.reduce((a,x)=>a+x.v,0),f=D().funded;
+  const abs=tot-f,pct=(abs/f)*100;
+  const rv=h.filter(x=>x.ac==='Renta Variable').reduce((a,x)=>a+x.v,0);
+  const rf=h.filter(x=>x.ac==='Renta Fija').reduce((a,x)=>a+x.v,0);
+  document.getElementById('kpiStrip').innerHTML=`
+    <div class="kpi blue"><div class="k-label">Valuación Total</div><div class="k-val">${usd(tot)}</div><div class="k-sub">${h.length} instrumentos activos</div></div>
+    <div class="kpi green"><div class="k-label">Capital Fondeado</div><div class="k-val">${usd(f)}</div><div class="k-sub">Depósitos netos acumulados</div></div>
+    <div class="kpi ${abs>=0?'green':'yellow'}"><div class="k-label">Resultado</div><div class="k-val">${abs>=0?'+':'−'}${usd(abs)}</div><div class="k-delta ${cn(abs)}">${pctf(pct)} vs capital fondeado</div></div>
+    <div class="kpi blue"><div class="k-label">Renta Variable</div><div class="k-val">${usd(rv)}</div><div class="k-sub">${((rv/tot)*100).toFixed(1)}% del portfolio</div></div>
+    <div class="kpi green"><div class="k-label">Renta Fija</div><div class="k-val">${usd(rf)}</div><div class="k-sub">${((rf/tot)*100).toFixed(1)}% del portfolio</div></div>
+  `;
+}
+
+// Donuts
+function mkDonut(id,lid,data){
+  const tot=data.reduce((a,d)=>a+d.v,0);
+  if(charts[id])charts[id].destroy();
+  charts[id]=new Chart(document.getElementById(id).getContext('2d'),{
+    type:'doughnut',
+    data:{labels:data.map(d=>d.l),datasets:[{data:data.map(d=>d.v),backgroundColor:data.map(d=>d.col),borderWidth:2,borderColor:'#131920'}]},
+    options:{responsive:false,cutout:'66%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${usd(c.raw)} (${((c.raw/tot)*100).toFixed(1)}%)`}}}}
+  });
+  const ul=document.getElementById(lid);ul.innerHTML='';
+  data.forEach(d=>{const li=document.createElement('li');li.innerHTML=`<span style="display:flex;align-items:center;gap:4px"><span class="dot" style="background:${d.col}"></span>${d.l}</span><span class="pct">${((d.v/tot)*100).toFixed(1)}%</span>`;ul.appendChild(li)});
+}
+function renderDonuts(){
+  const h=openH();
+  const ac={};h.forEach(x=>{ac[x.ac]=(ac[x.ac]||0)+x.v});
+  mkDonut('dAC','lAC',Object.entries(ac).map(([k,v],i)=>({l:k,v,col:P[i]})));
+  const cat={};h.forEach(x=>{cat[x.c]=(cat[x.c]||0)+x.v});
+  const ca=Object.entries(cat).sort((a,b)=>b[1]-a[1]);
+  mkDonut('dCat','lCat',ca.map(([k,v],i)=>({l:k,v,col:P[i]})));
+}
+
+// Holdings table
+function renderHoldings(){
+  const h=openH(),tot=h.reduce((a,x)=>a+x.v,0);
+  let data=[...h];
+  if(hFilter!=='all')data=data.filter(x=>x.ac===hFilter);
+  const c=hSort.c;data.sort((a,b)=>{
+    let av=a[c]??a.v,bv=b[c]??b.v;
+    if(c==='pct'){av=a.v/tot;bv=b.v/tot}
+    if(c==='pnl'){av=a.v-a.co;bv=b.v-b.co}
+    if(c==='pnlpct'){av=(a.v-a.co)/a.co;bv=(b.v-b.co)/b.co}
+    if(typeof av==='string')return hSort.d*(av>bv?1:-1);
+    return hSort.d*(av-bv);
+  });
+  document.getElementById('hCount').textContent=data.length+' instrumentos';
+  const tb=document.getElementById('hBody');tb.innerHTML='';
+  data.forEach((x,i)=>{
+    const pnl=x.v-x.co,pp=(pnl/x.co)*100,wp=(x.v/tot)*100;
+    const col=P[i%P.length];
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><div class="ticker-cell"><div class="ticker-dot" style="background:${col}">${x.t.substring(0,2)}</div><div><div class="ticker-name">${x.t}</div><div class="ticker-sub">${x.ac}</div></div></div></td>
+      <td style="font-size:12px">${x.c}</td>
+      <td style="font-size:12px">${x.r}</td>
+      <td class="num" style="font-weight:600;color:var(--white)">${usd(x.v)}</td>
+      <td class="num">${wp.toFixed(1)}%<div class="bar-sm"><div class="bar-sm-fill" style="width:${Math.min(wp*2.5,100)}%;background:${col}"></div></div></td>
+      <td class="num ${cn(pnl)}">${pnl>=0?'+':'−'}${usd(pnl)}</td>
+      <td class="num ${cn(pp)}">${pctf(pp)}</td>
+      <td><span class="tag ${x.ac==='Renta Variable'?'tag-rv':'tag-rf'}">${x.ac==='Renta Variable'?'RV':'RF'}</span></td>`;
+    tb.appendChild(tr);
+  });
+}
+function filterH(f,btn){hFilter=f;document.querySelectorAll('#pane-tenencias .pill').forEach(p=>p.classList.remove('active'));btn.classList.add('active');renderHoldings();}
+function srt(tbl,col){
+  if(tbl==='h'){hSort.d=hSort.c===col?-hSort.d:-1;hSort.c=col;renderHoldings();}
+  else{pSort.d=pSort.c===col?-pSort.d:-1;pSort.c=col;renderPerf();}
+}
+
+// Performance
+function perfV(v,btn){pView=v;btn.closest('.toggle-group').querySelectorAll('.tog').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderPerf();}
+function perfG(g,btn){pGrp=g;btn.closest('.toggle-group').querySelectorAll('.tog').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderPerf();}
+
+function getPD(){
+  let src=D().holdings;
+  if(pView==='open')src=src.filter(x=>x.st==='open'&&x.v>0);
+  if(pView==='closed')src=src.filter(x=>x.st==='closed');
+  if(pGrp==='ticker')return src.map(x=>{const val=x.st==='closed'?(x.ev||0):x.v;return{label:x.t,categoria:x.c,costo:x.co,valor:val,pnl:val-x.co,pnlpct:((val-x.co)/x.co)*100,ac:x.ac,st:x.st}});
+  const k=pGrp==='categoria'?'c':'r';
+  const m={};src.forEach(x=>{const val=x.st==='closed'?(x.ev||0):x.v;if(!m[x[k]])m[x[k]]={costo:0,valor:0,ac:x.ac,st:x.st};m[x[k]].costo+=x.co;m[x[k]].valor+=val});
+  return Object.entries(m).map(([key,v])=>({label:key,categoria:key,costo:v.costo,valor:v.valor,pnl:v.valor-v.costo,pnlpct:((v.valor-v.costo)/v.costo)*100,ac:v.ac,st:v.st}));
+}
+
+function renderPerf(){
+  let data=getPD();
+  const c=pSort.c;data.sort((a,b)=>{let av=a[c]??0,bv=b[c]??0;if(typeof av==='string')return pSort.d*(av>bv?1:-1);return pSort.d*(av-bv)});
+  document.getElementById('pCount').textContent=data.length+' registros';
+  // Table
+  const tb=document.getElementById('pBody');tb.innerHTML='';
+  data.forEach(d=>{const tr=document.createElement('tr');tr.innerHTML=`
+    <td><strong style="color:var(--text-hi)">${d.label}</strong></td>
+    <td style="font-size:12px;color:var(--muted)">${d.categoria}</td>
+    <td><span class="tag ${d.st==='open'?'tag-open':'tag-closed'}">${d.st==='open'?'● Abierto':'○ Cerrado'}</span></td>
+    <td class="num">${usd(d.costo)}</td>
+    <td class="num" style="color:var(--white);font-weight:600">${usd(d.valor)}</td>
+    <td class="num ${cn(d.pnl)}">${d.pnl>=0?'+':'−'}${usd(d.pnl)}</td>
+    <td class="num ${cn(d.pnlpct)}">${pctf(d.pnlpct)}</td>`;tb.appendChild(tr)});
+  // Bar chart
+  const top=[...data].sort((a,b)=>Math.abs(b.pnl)-Math.abs(a.pnl)).slice(0,12);
+  if(charts.bar)charts.bar.destroy();
+  charts.bar=new Chart(document.getElementById('barPnl').getContext('2d'),{
+    type:'bar',data:{labels:top.map(d=>d.label),datasets:[{data:top.map(d=>d.pnl),backgroundColor:top.map(d=>d.pnl>=0?'rgba(52,208,88,.7)':'rgba(234,74,90,.7)'),borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${usd(c.raw)}`}}},scales:{x:{ticks:{color:'#6b7d93',font:{size:10}},grid:{display:false}},y:{ticks:{color:'#6b7d93',callback:v=>'$'+v.toLocaleString()},grid:{color:'#1a2230'}}}}
+  });
+  // Donut PnL
+  const acP={};data.forEach(d=>{acP[d.ac]=(acP[d.ac]||0)+d.pnl});
+  mkDonut('dPnl','lPnl',Object.entries(acP).map(([k,v],i)=>({l:k,v:Math.abs(v),col:P[i]})));
+}
+
+// Evolution
+function renderEvo(){
+  const h=openH(),tot=h.reduce((a,x)=>a+x.v,0),f=D().funded;
+  const mx=Math.max(...D().evo.map(e=>e.v));
+  const deps=D().cashflows.filter(c=>c.m>0);
+  document.getElementById('evoStats').innerHTML=`
+    <div class="s"><span class="l">Máximo histórico</span><span class="v">${usd(mx)}</span><span class="u">Pico de valuación</span></div>
+    <div class="s"><span class="l">Retorno total</span><span class="v" style="color:var(--green)">${pctf(((tot-f)/f)*100)}</span><span class="u">Desde primer fondeo</span></div>
+    <div class="s"><span class="l">Capital invertido</span><span class="v">${usd(f)}</span><span class="u">Depósitos acumulados</span></div>
+    <div class="s"><span class="l">Depósitos</span><span class="v">${deps.length}</span><span class="u">Movimientos registrados</span></div>
+  `;
+  const ev=D().evo;
+  const depPts=ev.map(e=>{const cf=D().cashflows.find(c=>c.f.substring(0,7)===e.d&&c.m>0);return cf?e.v:null});
+  if(charts.evo)charts.evo.destroy();
+  charts.evo=new Chart(document.getElementById('evoChart').getContext('2d'),{
+    type:'line',
+    data:{labels:ev.map(e=>e.d),datasets:[
+      {label:'Valuación USD',data:ev.map(e=>e.v),borderColor:'#4d9eff',backgroundColor:(ctx)=>{const c=ctx.chart,{ctx:cx,chartArea:ca}=c;if(!ca)return'transparent';const g=cx.createLinearGradient(0,ca.top,0,ca.bottom);g.addColorStop(0,'rgba(77,158,255,.22)');g.addColorStop(1,'rgba(77,158,255,.01)');return g},borderWidth:2,fill:true,tension:.35,pointRadius:3,pointHoverRadius:6,pointBackgroundColor:'#4d9eff'},
+      {label:'Depósito',data:depPts,type:'scatter',pointRadius:7,pointHoverRadius:9,pointStyle:'triangle',pointBackgroundColor:'#34d058',showLine:false}
+    ]},
+    options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{color:'#6b7d93',font:{size:11}}},tooltip:{callbacks:{label:c=>c.dataset.label==='Depósito'?` Depósito — ${usd(c.raw)}`:`Valuación: ${usd(c.raw)}`}}},scales:{x:{ticks:{color:'#6b7d93',maxRotation:45,font:{size:10}},grid:{color:'#1a2230'}},y:{ticks:{color:'#6b7d93',callback:v=>'$'+v.toLocaleString()},grid:{color:'#1a2230'}}}}
+  });
+}
+function renderCashflows(){
+  const tb=document.getElementById('cfBody');tb.innerHTML='';
+  [...D().cashflows].reverse().forEach(cf=>{const dep=cf.m>0;const tr=document.createElement('tr');tr.innerHTML=`
+    <td>${cf.f}</td><td><span class="tag ${dep?'tag-rv':'tag-closed'}">${cf.tipo}</span></td>
+    <td class="num ${dep?'pos':'neg'}">${dep?'+':''}${usd(cf.m)}</td>
+    <td style="color:var(--muted);font-size:12px">${cf.d}</td>`;tb.appendChild(tr)});
+}
+
+// Glossary
+function renderGlossary(){
+  document.getElementById('gCount').textContent=GLOSSARY.length+' términos';
+  const el=document.getElementById('glossaryList');el.innerHTML='';
+  GLOSSARY.forEach(g=>{
+    const div=document.createElement('div');div.className='glossary-item';
+    div.innerHTML=`<span class="arrow">▸</span><div class="glossary-term">${g.term}</div><div class="glossary-def">${g.def}</div>`;
+    div.onclick=()=>div.classList.toggle('open');
+    el.appendChild(div);
+  });
+}
+
+// Quick actions
+function renderQuick(){
+  const el=document.getElementById('quickGrid');el.innerHTML='';
+  QUICK_ACTIONS.forEach(q=>{
+    const div=document.createElement('div');div.className='quick-card';
+    div.innerHTML<`<div class="qc-icon">${q.icon}</div><div class="qc-title">${q.title}</div><div class="qc-desc">${q.desc}</div>`;
+    div.onclick=()=>{document.getElementById('chatInput').value=q.title;sendChat()};
+    el.appendChild(div);
+  });
+}
+
+/* ──────────────────────────────────────────────────────
+   CHAT / CONSULTAS ENGINE
+────────────────────────────────────────────────────── */
+function sendChat(){
+  const inp=document.getElementById('chatInput');
+  const q=inp.value.trim();if(!q)return;
+  inp.value='';
+  const area=document.getElementById('chatArea');
+  area.innerHTML+=`<div class="chat-msg user"><div class="msg-header">Vos</div>${q}</div>`;
+
+  // Typing indicator
+  const typing=document.createElement('div');typing.className='chat-msg assistant';
+  typing.innerHTML=`<div class="msg-header">ANK Asesoría</div><div class="typing-indicator"><span></span><span></span><span></span></div>`;
+  area.appendChild(typing);area.scrollTop=area.scrollHeight;
+
+  setTimeout(()=>{
+    typing.remove();
+    const answer=generateAnswer(q);
+    area.innerHTML+=`<div class="chat-msg assistant"><div class="msg-header">ANK Asesoría</div>${answer}</div>`;
+    area.scrollTop=area.scrollHeight;
+  },800+Math.random()*600);
+}
+
+function generateAnswer(q){
+  const ql=q.toLowerCase();
+  const h=openH(),tot=h.reduce((a,x)=>a+x.v,0),f=D().funded;
+  const abs=tot-f,pctR=((abs/f)*100);
+  const rv=h.filter(x=>x.ac==='Renta Variable'),rf=h.filter(x=>x.ac==='Renta Fija');
+  const rvV=rv.reduce((a,x)=>a+x.v,0),rfV=rf.reduce((a,x)=>a+x.v,0);
+
+  // Posición más grande
+  if(ql.includes('más grande')||ql.includes('mayor peso')||ql.includes('posición más')){
+    const top=[...h].sort((a,b)=>b.v-a.v).slice(0,5);
+    return `Tu posición más grande es <strong>${top[0].t}</strong> con ${usd(top[0].v)} (${((top[0].v/tot)*100).toFixed(1)}% de la cartera).<br><br>Top 5:<br>${top.map((x,i)=>`${i+1}. ${x.t}: ${usd(x.v)} (${((x.v/tot)*100).toFixed(1)}%)`).join('<br>')}`;
+  }
+  // Cuánto gané
+  if(ql.includes('gané')||ql.includes('ganancia')||ql.includes('rendimiento')||ql.includes('resultado')){
+    return `Tu resultado total es de <strong class="${cn(abs)}">${abs>=0?'+':'−'}${usd(abs)}</strong> (${pctf(pctR)}) respecto a un capital fondeado de ${usd(f)}.<br><br>La valuación actual de tu cartera es de ${usd(tot)}.`;
+  }
+  // Balance RV/RF
+  if(ql.includes('balance')||ql.includes('rv/rf')||ql.includes('proporción')||ql.includes('distribución')){
+    return `Tu distribución actual es:<br>• <strong>Renta Variable:</strong> ${usd(rvV)} (${((rvV/tot)*100).toFixed(1)}%)<br>• <strong>Renta Fija:</strong> ${usd(rfV)} (${((rfV/tot)*100).toFixed(1)}%)<br><br>Target estratégico: RV 55% / RF 45%.`;
+  }
+  // Renta fija
+  if(ql.includes('renta fija')||ql.includes('bonos')||ql.includes('fci')){
+    const cats={};rf.forEach(x=>{hcats[x.c]=(cats[x.c]||0)+x.vz);
+    return `Total en Renta Fija: <strong>${usd(rfV)}</strong> (${`((rfV/tot)*100).toFixed(1)}%)<br><br>Desglose:<br>${Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([k,v])=>• ${k}: ${usd(v)} (${((v/rfV)*100).toFixed(1)}% de RF)`).join('<br>')}`;
+  }
+  // Pérdida
+  if(ql.includep����ɑ�������Ű�����Ց�̠���ɑ�������Ű�����Ց�̠�����ѥ؜���Ű�����Ց�̠�ɽ������(��������Ё����������ѕȡ�����صํ������(����������̹����Ѡ�����ɕ��ɸ��9��ѕ��́��ͥ�����́�����ɑ���������є������Ѽ���(����ɕ��ɸ��A�ͥ�����́����@�0�����ѥټ���������̹�������퍽��Ё�����صํ��ɕ��ɹ���������耑��͐�����􀠑���ј������ํ���������������������������(���(��������ͥѼ���������(�����Ű�����Ց�̠�����ͥѼ����Ű�����Ց�̠�����ͥѼ����Ű�����Ց�̠�����������Ű�����Ց�̠��ѥ������Ű�����Ց�̠���٥����Ѽ����(��������Ё����������͡�����m�����͡����̹����Ѡ��t�(����ɕ��ɸ��Qԃ�ѥ�����٥����Ѽ��Ք�ո����ɽ��������йѥ������ɽ����������͐����й��􁕰������й�������͍ɥ���͸耑����й������������х�������������յձ���耑��͐�������(���(��������������(�����Ű�����Ց�̠������������Ű�����Ց�̠�ɕ��͸����Ű�����Ց�̠�ɕ��������Ű�����Ց�̠�����ͥ��͸����(��������Ёɕ�������������������ɕ��m��t��ɕ��m��u����������(����ɕ��ɸ�����ͥ��͸�����������������=����й���ɥ�̡ɕ�̤�ͽ�Р��������l�t��l�t�������m���t����������耑��͐�إ􀠑젡ؽѽФ������ѽ�ᕐ�ĥ��������������������(���(�����Prades cerrados
+  if(ql.includes('cerrad')||ql.includes('vendí')||ql.includes('vendi')||ql.includes('pasado')||ql.includes('histori')){
+    const closed=D().holdings.filter(x=>x.st==='closed');
+    if(closed.length===0)return 'No hay trades cerrados registrados.';
+    const totalPnl=closed.reduce((a,x)=>a+(x.ev||0)-x.co,0);
+    return `Trades cerrados:<br>${closed.map(x=>{const pnl=(x.ev||0)-x.co;return`• ${x.t}: Compra ${usd(x.co)} → Venta ${usd(x.ev||0)} → P&L <span class="${cn(pnl)}">${pnl>=0?'+':'−'}${usd(pnl)}</span>`}).join('<br>')}<br><br>P&L total de trades cerrados: <strong class="${cn(totalPnl)}">${totalPnl>=0?'+':'−'}${usd(totalPnl)}</strong>`;
+  }
+
+  return `Tu consulta fue registrada. Axel te responderá a la brevedad. Mientras tanto, podés revisar las pestañas de <strong>Tenencias</strong>, <strong>Rendimiento</strong> y <strong>Evolución</strong> para información detallada de tu cartera.<br><br>Valuación actual: <strong>${usd(tot)}</strong> | Resultado: <strong class="${cn(abs)}">${pctf(pctR)}</strong>`;
+}
+
+/* ──────────────────────────────────────────────────────
+   TAB SWITCHING
+────────────────────────────────────────────────────── */
+function goTab(name,btn){
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pane-'+name).classList.add('active');
+}
+
+/* ──────────────────────────────────────────────────────
+   BOOT
+────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded',renderAll);
+</script>
+</body>
+</html>

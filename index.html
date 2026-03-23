@@ -312,6 +312,7 @@ tbody td { padding:10px 12px; font-size:13px; }
       <option value="dwek">Brian Dwek</option>
       <option value="agostina">Agostina Kañevsky</option>
       <option value="angelone">Luciano Angelone</option>
+      <option value="soluciones_salud">SolucionesSalud</option>
     </select>
     <span class="update-badge">Actualizado: <span id="updDate">—</span></span>
   </div>
@@ -796,29 +797,38 @@ const CLIENTS = {
   },
 ,
   bocos_arias: {
-    name:"Lorena Bocos / Alejandro Arias", broker:"Balanz", updated:"2026-03-23", funded:29907,
+    name:"Lorena Bocos / Alejandro Arias", broker:"Balanz", updated:"2026-03-23", funded:20465,
     holdings:[
-      {t:"BABA",c:"Equity Emergentes",r:"China",ac:"Renta Variable",v:742,co:742,st:"open"},
+      {t:"BABA",c:"Equity Emergentes",r:"China",ac:"Renta Variable",v:740,co:740,st:"open"},
       {t:"COPX",c:"ETF Commodities",r:"Global",ac:"Renta Variable",v:780,co:780,st:"open"},
-      {t:"EWZ",c:"ETF Emergentes",r:"Brasil",ac:"Renta Variable",v:895,co:895,st:"open"},
+      {t:"EWZ",c:"ETF Emergentes",r:"Brasil",ac:"Renta Variable",v:893,co:893,st:"open"},
       {t:"MELI",c:"Equity Latam",r:"Latinoamérica",ac:"Renta Variable",v:749,co:749,st:"open"},
-      {t:"MSFT",c:"Equity USA",r:"USA",ac:"Renta Variable",v:874,co:874,st:"open"},
+      {t:"MSFT",c:"Equity USA",r:"USA",ac:"Renta Variable",v:876,co:876,st:"open"},
       {t:"SPOT",c:"Equity USA",r:"USA",ac:"Renta Variable",v:928,co:928,st:"open"},
-      {t:"UBER",c:"Equity USA",r:"USA",ac:"Renta Variable",v:964,co:964,st:"open"},
+      {t:"UBER",c:"Equity USA",r:"USA",ac:"Renta Variable",v:965,co:965,st:"open"},
       {t:"VIST",c:"Equity Argentina",r:"Argentina",ac:"Renta Variable",v:1148,co:1148,st:"open"},
       {t:"BACHO",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:4234,co:4234,st:"open"},
       {t:"DNC3O",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:2144,co:2144,st:"open"},
       {t:"DNC5O",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:2065,co:2065,st:"open"},
       {t:"VBC1O",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:2032,co:2032,st:"open"},
       {t:"ZPC3O",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:2911,co:2911,st:"open"},
+    ],
+    cashflows:[{f:"2026-03-23",tipo:"Depósito",m:20465,d:"Foto de cartera al 23/03/2026"}],
+    evo:[{d:"2026-03",v:20465}]
+  },
+
+  dwek: {
+    name:"Brian Dwek", broker:"Balanz", updated:"2026-03-23", funded:9441,
+    holdings:[
       {t:"BCMMUSDA",c:"FCI USD",r:"Argentina",ac:"Renta Fija",v:6646,co:6646,st:"open"},
       {t:"ESTRA1A",c:"FCI USD",r:"Argentina",ac:"Renta Fija",v:2795,co:2795,st:"open"},
     ],
-    cashflows:[{f:"2026-03-23",tipo:"Depósito",m:29907,d:"Foto de cartera al 23/03/2026"}],
-    evo:[{d:"2026-03",v:29907}]
+    cashflows:[{f:"2026-03-23",tipo:"Depósito",m:9441,d:"Foto de cartera al 23/03/2026"}],
+    evo:[{d:"2026-03",v:9441}]
   },
-  dwek: {
-    name:"Brian Dwek", broker:"Cocos Capital", updated:"2026-03-23", funded:5603,
+
+  agostina: {
+    name:"Agostina Kañevsky", broker:"Cocos Capital", updated:"2026-03-23", funded:5603,
     holdings:[
       {t:"AE38",c:"Bonos Soberanos USD",r:"Argentina",ac:"Renta Fija",v:143,co:143,st:"open"},
       {t:"BPOB7",c:"Bonos Soberanos USD",r:"Argentina",ac:"Renta Fija",v:187,co:187,st:"open"},
@@ -840,8 +850,9 @@ const CLIENTS = {
     cashflows:[{f:"2026-03-23",tipo:"Depósito",m:5603,d:"Foto de cartera al 23/03/2026"}],
     evo:[{d:"2026-03",v:5603}]
   },
-  agostina: {
-    name:"Agostina Kañevsky", broker:"Balanz", updated:"2026-03-23", funded:64015,
+
+  angelone: {
+    name:"Luciano Angelone", broker:"Balanz", updated:"2026-03-23", funded:64015,
     holdings:[
       {t:"S29Y6",c:"Letras ARS",r:"Argentina",ac:"Renta Fija",v:5879,co:5879,st:"open"},
       {t:"BCMMUSDA",c:"FCI USD",r:"Argentina",ac:"Renta Fija",v:37684,co:37684,st:"open"},
@@ -850,15 +861,16 @@ const CLIENTS = {
     cashflows:[{f:"2026-03-23",tipo:"Depósito",m:64015,d:"Foto de cartera al 23/03/2026"}],
     evo:[{d:"2026-03",v:64015}]
   },
-  angelone: {
-    name:"Luciano Angelone", broker:"Balanz", updated:"2026-03-23", funded:24803,
+
+  soluciones_salud: {
+    name:"SolucionesSalud", broker:"Balanz", updated:"2026-03-23", funded:24796,
     holdings:[
-      {t:"EEM",c:"ETF Emergentes",r:"Global",ac:"Renta Variable",v:774,co:774,st:"open"},
+      {t:"EEM",c:"ETF Emergentes",r:"Global",ac:"Renta Variable",v:775,co:775,st:"open"},
       {t:"IVE",c:"ETF USA",r:"USA",ac:"Renta Variable",v:688,co:688,st:"open"},
-      {t:"MELI",c:"Equity Latam",r:"Latinoamérica",ac:"Renta Variable",v:550,co:550,st:"open"},
-      {t:"NU",c:"Equity Latam",r:"Latinoamérica",ac:"Renta Variable",v:688,co:688,st:"open"},
-      {t:"UBER",c:"Equity USA",r:"USA",ac:"Renta Variable",v:578,co:578,st:"open"},
-      {t:"XLV",c:"ETF USA",r:"USA",ac:"Renta Variable",v:776,co:776,st:"open"},
+      {t:"MELI",c:"Equity Latam",r:"Latinoamérica",ac:"Renta Variable",v:548,co:548,st:"open"},
+      {t:"NU",c:"Equity Latam",r:"Latinoamérica",ac:"Renta Variable",v:686,co:686,st:"open"},
+      {t:"UBER",c:"Equity USA",r:"USA",ac:"Renta Variable",v:579,co:579,st:"open"},
+      {t:"XLV",c:"ETF USA",r:"USA",ac:"Renta Variable",v:771,co:771,st:"open"},
       {t:"ARC1O",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:833,co:833,st:"open"},
       {t:"CS48O",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:1807,co:1807,st:"open"},
       {t:"IRCOO",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:1894,co:1894,st:"open"},
@@ -871,9 +883,10 @@ const CLIENTS = {
       {t:"BCMMUSDA",c:"FCI USD",r:"Argentina",ac:"Renta Fija",v:306,co:306,st:"open"},
       {t:"ESTRA1A",c:"FCI USD",r:"Argentina",ac:"Renta Fija",v:3331,co:3331,st:"open"},
     ],
-    cashflows:[{f:"2026-03-23",tipo:"Depósito",m:24803,d:"Foto de cartera al 23/03/2026"}],
-    evo:[{d:"2026-03",v:24803}]
+    cashflows:[{f:"2026-03-23",tipo:"Depósito",m:24796,d:"Foto de cartera al 23/03/2026"}],
+    evo:[{d:"2026-03",v:24796}]
   },
+
 };
 
 /* ──────────────────────────────────────────────────────

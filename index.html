@@ -308,6 +308,10 @@ tbody td { padding:10px 12px; font-size:13px; }
       <option value="feierstein_e">Ethel Feierstein</option>
       <option value="feierstein_k">Karen Feierstein</option>
       <option value="kaufman">Nicole Kaufman</option>
+      <option value="bocos_arias">Lorena Bocos / Alejandro Arias</option>
+      <option value="dwek">Brian Dwek</option>
+      <option value="agostina">Agostina Kañevsky</option>
+      <option value="angelone">Luciano Angelone</option>
     </select>
     <span class="update-badge">Actualizado: <span id="updDate">—</span></span>
   </div>
@@ -789,6 +793,86 @@ const CLIENTS = {
     ],
     cashflows:[{f:"2026-03-23",tipo:"Depósito",m:15078,d:"Foto de cartera al 23/03/2026"}],
     evo:[{d:"2026-03",v:15078}]
+  },
+,
+  bocos_arias: {
+    name:"Lorena Bocos / Alejandro Arias", broker:"Balanz", updated:"2026-03-23", funded:29907,
+    holdings:[
+      {t:"BABA",c:"Equity Emergentes",r:"China",ac:"Renta Variable",v:742,co:742,st:"open"},
+      {t:"COPX",c:"ETF Commodities",r:"Global",ac:"Renta Variable",v:780,co:780,st:"open"},
+      {t:"EWZ",c:"ETF Emergentes",r:"Brasil",ac:"Renta Variable",v:895,co:895,st:"open"},
+      {t:"MELI",c:"Equity Latam",r:"Latinoamérica",ac:"Renta Variable",v:749,co:749,st:"open"},
+      {t:"MSFT",c:"Equity USA",r:"USA",ac:"Renta Variable",v:874,co:874,st:"open"},
+      {t:"SPOT",c:"Equity USA",r:"USA",ac:"Renta Variable",v:928,co:928,st:"open"},
+      {t:"UBER",c:"Equity USA",r:"USA",ac:"Renta Variable",v:964,co:964,st:"open"},
+      {t:"VIST",c:"Equity Argentina",r:"Argentina",ac:"Renta Variable",v:1148,co:1148,st:"open"},
+      {t:"BACHO",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:4234,co:4234,st:"open"},
+      {t:"DNC3O",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:2144,co:2144,st:"open"},
+      {t:"DNC5O",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:2065,co:2065,st:"open"},
+      {t:"VBC1O",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:2032,co:2032,st:"open"},
+      {t:"ZPC3O",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:2911,co:2911,st:"open"},
+      {t:"BCMMUSDA",c:"FCI USD",r:"Argentina",ac:"Renta Fija",v:6646,co:6646,st:"open"},
+      {t:"ESTRA1A",c:"FCI USD",r:"Argentina",ac:"Renta Fija",v:2795,co:2795,st:"open"},
+    ],
+    cashflows:[{f:"2026-03-23",tipo:"Depósito",m:29907,d:"Foto de cartera al 23/03/2026"}],
+    evo:[{d:"2026-03",v:29907}]
+  },
+  dwek: {
+    name:"Brian Dwek", broker:"Cocos Capital", updated:"2026-03-23", funded:5603,
+    holdings:[
+      {t:"AE38",c:"Bonos Soberanos USD",r:"Argentina",ac:"Renta Fija",v:143,co:143,st:"open"},
+      {t:"BPOB7",c:"Bonos Soberanos USD",r:"Argentina",ac:"Renta Fija",v:187,co:187,st:"open"},
+      {t:"TX26",c:"Bonos Soberanos ARS",r:"Argentina",ac:"Renta Fija",v:65,co:65,st:"open"},
+      {t:"VSCRO",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:528,co:528,st:"open"},
+      {t:"IRCOO",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:107,co:107,st:"open"},
+      {t:"TLCPO",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:272,co:272,st:"open"},
+      {t:"BRKB",c:"Equity USA",r:"USA",ac:"Renta Variable",v:46,co:46,st:"open"},
+      {t:"GOOGL",c:"Equity USA",r:"USA",ac:"Renta Variable",v:71,co:71,st:"open"},
+      {t:"MELI",c:"Equity Latam",r:"Latinoamérica",ac:"Renta Variable",v:44,co:44,st:"open"},
+      {t:"NU",c:"Equity Latam",r:"Latinoamérica",ac:"Renta Variable",v:69,co:69,st:"open"},
+      {t:"QQQ",c:"ETF USA",r:"USA",ac:"Renta Variable",v:247,co:247,st:"open"},
+      {t:"XLP",c:"ETF USA",r:"USA",ac:"Renta Variable",v:58,co:58,st:"open"},
+      {t:"COCORMA",c:"FCI ARS",r:"Argentina",ac:"Renta Fija",v:172,co:172,st:"open"},
+      {t:"COCOSPPA",c:"FCI ARS",r:"Argentina",ac:"Renta Fija",v:2281,co:2281,st:"open"},
+      {t:"S30A6",c:"Letras ARS",r:"Argentina",ac:"Renta Fija",v:267,co:267,st:"open"},
+      {t:"COCOAUD",c:"FCI USD",r:"Argentina",ac:"Renta Fija",v:1046,co:1046,st:"open"},
+    ],
+    cashflows:[{f:"2026-03-23",tipo:"Depósito",m:5603,d:"Foto de cartera al 23/03/2026"}],
+    evo:[{d:"2026-03",v:5603}]
+  },
+  agostina: {
+    name:"Agostina Kañevsky", broker:"Balanz", updated:"2026-03-23", funded:64015,
+    holdings:[
+      {t:"S29Y6",c:"Letras ARS",r:"Argentina",ac:"Renta Fija",v:5879,co:5879,st:"open"},
+      {t:"BCMMUSDA",c:"FCI USD",r:"Argentina",ac:"Renta Fija",v:37684,co:37684,st:"open"},
+      {t:"ESTRA1A",c:"FCI USD",r:"Argentina",ac:"Renta Fija",v:20452,co:20452,st:"open"},
+    ],
+    cashflows:[{f:"2026-03-23",tipo:"Depósito",m:64015,d:"Foto de cartera al 23/03/2026"}],
+    evo:[{d:"2026-03",v:64015}]
+  },
+  angelone: {
+    name:"Luciano Angelone", broker:"Balanz", updated:"2026-03-23", funded:24803,
+    holdings:[
+      {t:"EEM",c:"ETF Emergentes",r:"Global",ac:"Renta Variable",v:774,co:774,st:"open"},
+      {t:"IVE",c:"ETF USA",r:"USA",ac:"Renta Variable",v:688,co:688,st:"open"},
+      {t:"MELI",c:"Equity Latam",r:"Latinoamérica",ac:"Renta Variable",v:550,co:550,st:"open"},
+      {t:"NU",c:"Equity Latam",r:"Latinoamérica",ac:"Renta Variable",v:688,co:688,st:"open"},
+      {t:"UBER",c:"Equity USA",r:"USA",ac:"Renta Variable",v:578,co:578,st:"open"},
+      {t:"XLV",c:"ETF USA",r:"USA",ac:"Renta Variable",v:776,co:776,st:"open"},
+      {t:"ARC1O",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:833,co:833,st:"open"},
+      {t:"CS48O",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:1807,co:1807,st:"open"},
+      {t:"IRCOO",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:1894,co:1894,st:"open"},
+      {t:"NPCCO",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:1923,co:1923,st:"open"},
+      {t:"PN41O",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:1844,co:1844,st:"open"},
+      {t:"TLCPO",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:1236,co:1236,st:"open"},
+      {t:"YMCXO",c:"Bonos Corporativos USD",r:"Argentina",ac:"Renta Fija",v:1238,co:1238,st:"open"},
+      {t:"BCMMA",c:"FCI ARS",r:"Argentina",ac:"Renta Fija",v:767,co:767,st:"open"},
+      {t:"CPRIVADOA",c:"FCI ARS",r:"Argentina",ac:"Renta Fija",v:5570,co:5570,st:"open"},
+      {t:"BCMMUSDA",c:"FCI USD",r:"Argentina",ac:"Renta Fija",v:306,co:306,st:"open"},
+      {t:"ESTRA1A",c:"FCI USD",r:"Argentina",ac:"Renta Fija",v:3331,co:3331,st:"open"},
+    ],
+    cashflows:[{f:"2026-03-23",tipo:"Depósito",m:24803,d:"Foto de cartera al 23/03/2026"}],
+    evo:[{d:"2026-03",v:24803}]
   },
 };
 

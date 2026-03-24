@@ -281,9 +281,73 @@ tbody td { padding:10px 12px; font-size:13px; }
   font-size:11px; color:var(--muted);
   border-top:1px solid var(--border); margin-top:40px;
 }
+
+/* ── LOGIN OVERLAY ── */
+#loginOverlay {
+  position:fixed; inset:0; z-index:9999;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+}
+.login-box {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:44px 40px;
+  width:360px;
+  text-align:center;
+  box-shadow:0 24px 48px rgba(0,0,0,.4);
+}
+.login-logo-mark {
+  width:56px; height:56px; border-radius:12px;
+  background:var(--accent); color:#fff;
+  font-size:18px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 20px;
+}
+.login-title { font-size:20px; font-weight:700; color:var(--text-hi); margin-bottom:4px; }
+.login-sub { color:var(--muted); font-size:13px; margin-bottom:28px; }
+.login-input {
+  width:100%; padding:12px 16px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--radius-sm); color:var(--text-hi);
+  font-size:14px; font-family:var(--font);
+  margin-bottom:12px; outline:none; display:block;
+}
+.login-input:focus { border-color:var(--accent); }
+.login-btn {
+  width:100%; padding:13px;
+  background:var(--accent); color:#fff;
+  border:none; border-radius:var(--radius-sm);
+  font-size:15px; font-weight:600; cursor:pointer;
+  margin-top:4px; font-family:var(--font);
+  transition:opacity .15s;
+}
+.login-btn:hover { opacity:.88; }
+.login-error { color:var(--red); font-size:13px; margin-top:14px; min-height:18px; }
+#clientNameDisplay { color:var(--text-hi); font-weight:600; font-size:14px; margin-right:8px; }
+#logoutBtn {
+  background:transparent; border:1px solid var(--border);
+  color:var(--muted); padding:6px 14px; border-radius:var(--radius-sm);
+  font-size:13px; cursor:pointer; font-family:var(--font);
+  transition:var(--transition);
+}
+#logoutBtn:hover { border-color:var(--accent); color:var(--accent); }
 </style>
 </head>
 <body>
+
+<!-- ═══════════════════════ LOGIN OVERLAY ═══════════════════════ -->
+<div id="loginOverlay">
+  <div class="login-box">
+    <div class="login-logo-mark">ANK</div>
+    <div class="login-title">ANK Asesoría Financiera</div>
+    <div class="login-sub">Portal de Seguimiento de Cartera</div>
+    <input id="loginUser" class="login-input" type="text" placeholder="Usuario" autocomplete="username">
+    <input id="loginPass" class="login-input" type="password" placeholder="Contraseña" autocomplete="current-password">
+    <button class="login-btn" onclick="doLogin()">Ingresar</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
 
 <!-- ═══════════════════════ HEADER ═══════════════════════ -->
 <header class="header">
@@ -292,7 +356,9 @@ tbody td { padding:10px 12px; font-size:13px; }
     <div><h1>ANK Asesoría Financiera</h1><p>Portal de Seguimiento de Cartera</p></div>
   </div>
   <div class="header-right">
-    <select class="client-sel" id="clientSel" onchange="onClientChange()">
+    <span id="clientNameDisplay"></span>
+    <button id="logoutBtn" onclick="doLogout()" style="display:none">Cerrar sesión</button>
+    <select class="client-sel" id="clientSel" onchange="onClientChange()" style="display:none">
       <option value="janowski">Nicolas Janowski</option>
       <option value="nechaevsky">Damian Nechaevsky</option>
       <option value="sercovich">Leandro Sercovich</option>
@@ -465,6 +531,39 @@ tbody td { padding:10px 12px; font-size:13px; }
      DATA & LOGIC
 ═══════════════════════════════════════════════════════════ -->
 <script>
+/* ──────────────────────────────────────────────────────
+   CREDENTIALS — usuario → {pass, key}
+────────────────────────────────────────────────────── */
+const CREDENTIALS = {
+  "njanowski":    {pass:"ANK4815", key:"janowski"},
+  "dnechaevsky":  {pass:"ANK3927", key:"nechaevsky"},
+  "lsercovich":   {pass:"ANK7364", key:"sercovich"},
+  "afernandez":   {pass:"ANK2851", key:"fernandez"},
+  "mfraiberger":  {pass:"ANK9463", key:"fraiberger"},
+  "isandor":      {pass:"ANK1738", key:"sandor"},
+  "nkartun":      {pass:"ANK5029", key:"kartun"},
+  "ffanuele":     {pass:"ANK8374", key:"fanuele"},
+  "jrojas":       {pass:"ANK2916", key:"rojas"},
+  "gpeyrallo":    {pass:"ANK6481", key:"peyrallo"},
+  "pschatzky":    {pass:"ANK3795", key:"schatzky"},
+  "zfillippelli": {pass:"ANK8264", key:"fillippelli"},
+  "efeierstein":  {pass:"ANK4917", key:"feierstein_e"},
+  "kfeierstein":  {pass:"ANK7253", key:"feierstein_k"},
+  "nkaufman":     {pass:"ANK1846", key:"kaufman"},
+  "lbocos":       {pass:"ANK9372", key:"bocos_arias"},
+  "bdwek":        {pass:"ANK5814", key:"dwek"},
+  "akanevsky":    {pass:"ANK2739", key:"agostina"},
+  "langelone":    {pass:"ANK6157", key:"angelone"},
+  "ssoluciones":  {pass:"ANK3948", key:"soluciones_salud"},
+  "rmenendez":    {pass:"ANK7462", key:"menendez"},
+  "rbarrena":     {pass:"ANK1593", key:"barrena"},
+  "rjanowski":    {pass:"ANK8271", key:"rjanowski"},
+  "acartasegna":  {pass:"ANK5038", key:"cartasegna"},
+  "ggimenez":     {pass:"ANK9174", key:"gimenez"},
+  "dankoler":     {pass:"ANK4629", key:"dankoler_sh"},
+  "lkartun":      {pass:"ANK7381", key:"lkartun"},
+};
+
 /* ──────────────────────────────────────────────────────
    DATA — CLIENTS
 ────────────────────────────────────────────────────── */
@@ -1344,9 +1443,44 @@ function goTab(name,btn){
 }
 
 /* ──────────────────────────────────────────────────────
+   LOGIN / LOGOUT
+────────────────────────────────────────────────────── */
+function doLogin() {
+  const user = document.getElementById('loginUser').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value.trim();
+  const cred = CREDENTIALS[user];
+  if (cred && cred.pass === pass) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('logoutBtn').style.display = 'inline-block';
+    document.getElementById('clientSel').value = cred.key;
+    document.getElementById('clientNameDisplay').textContent = CLIENTS[cred.key].name;
+    CUR = cred.key;
+    renderAll();
+  } else {
+    document.getElementById('loginError').textContent = 'Usuario o contraseña incorrectos.';
+  }
+}
+
+function doLogout() {
+  document.getElementById('loginOverlay').style.display = 'flex';
+  document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('clientNameDisplay').textContent = '';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginError').textContent = '';
+}
+
+/* ──────────────────────────────────────────────────────
    BOOT
 ────────────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded',renderAll);
+document.addEventListener('DOMContentLoaded', function() {
+  // Login overlay is shown by default via HTML; no auto-render
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.getElementById('loginOverlay').style.display !== 'none') {
+      doLogin();
+    }
+  });
+});
 </script>
 </body>
 </html>
